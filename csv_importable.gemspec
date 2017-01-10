@@ -6,17 +6,17 @@ require 'csv_importable/version'
 Gem::Specification.new do |spec|
   spec.name          = "csv_importable"
   spec.version       = CsvImportable::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["ryan.p.francis@gmail.com"]
+  spec.authors       = ["Ryan Francis"]
+  spec.email         = ["ryan@launchpadlab.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Import CSV files from users}
+  spec.description   = %q{Equipped with intelligent parsing rules and excellent error handling, this gem is all you need for importing CSVs in Ruby.}
+  spec.homepage      = "https://github.com/LaunchPadLab/csv_importable"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = "https://rubygems.org"
   else
     raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end
