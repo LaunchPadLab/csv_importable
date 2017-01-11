@@ -4,7 +4,7 @@ module CSVImportable
   class CSVImporter
     include CSVImportable::CSVCoercion
     attr_reader :file_string, :should_replace, :out, :results,
-                :importable_class, :import_obj
+                :importable_class, :import_obj, :row_importer_class
 
     BIG_FILE_THRESHOLD = 10
 
@@ -21,6 +21,7 @@ module CSVImportable
       # because we can't pass file_string to delayed job
       @file_string = @import_obj.read_file if @import_obj
       @should_replace = args.fetch(:should_replace, false)
+      @row_importer_class = args[:row_importer_class]
       after_init(args)
       require_args
     end
@@ -37,11 +38,10 @@ module CSVImportable
         @results = parse_csv_string(file_string) do |row, headers|
           process_row(row, headers)
         end
-        after_rows
+        after_rows(@results.map(&:value))
         print(finished_message)
         @results
       end
-      finish_background_job if processing_in_background?
       @results
     end
 
@@ -69,19 +69,11 @@ module CSVImportable
         end
       end
 
-      def finish_background_job
-        print "Updating import object and triggering email..."
-        import_obj.results = results
-        succeeded? ? import_obj.success!(number_imported) : import_obj.fail!
-        import_obj.finished_background_job!
-        print "Done."
-      end
-
       def before_rows
         # hook for subclasses
       end
 
-      def after_rows
+      def after_rows(values)
         # hook for subclasses
       end
 
@@ -98,17 +90,12 @@ module CSVImportable
         @should_replace
       end
 
-      def processing_in_background?
-        return false unless import_obj.present?
-        import_obj.processing_in_background?
-      end
-
       def destroy_records
         # hook for subclasses
       end
 
-      def process_row
-        fail 'process_row method is required by subclasses'
+      def process_row(row, headers)
+        row_importer_class.new(row: row, headers: headers).import_row if row_importer_class
       end
 
       def starting_message
@@ -121,7 +108,6 @@ module CSVImportable
 
       def print(message)
         out.print message
-        Delayed::Worker.logger.info(message) if processing_in_background?
       end
 
       def guard_against_errors(&block)
@@ -174,25 +160,27 @@ module CSVImportable
         [csv, headers]
       end
 
-      def parse_csv_string(csv_str, results=[], &block)
+      def parse_csv_string(csv_str, previous_results=[], &block)
 
         csv, headers = load_csv_from_file(csv_str)
 
         idx = 1
         csv.each.map do |row|
           errors = []
+          return_value = nil
           begin
-            yield row, headers
+            return_value = yield row, headers
           rescue Exception => e
             errors << e.message
           end
 
-          result = results.detect(lambda { {} }) { |result| result[:row] == idx+1 }
+          result = previous_results.detect(lambda { {} }) { |result| result[:row] == idx+1 }
 
           {
             row:    idx += 1,
             status: errors.any? ? Statuses::ERROR : result.fetch(:status, Statuses::SUCCESS),
-            errors: result.fetch(:errors, []) + errors
+            errors: result.fetch(:errors, []) + errors,
+            value: return_value
           }
         end
       end

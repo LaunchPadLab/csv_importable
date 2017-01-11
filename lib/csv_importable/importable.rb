@@ -18,6 +18,11 @@ module CSVImportable
 
     # === INTERFACE METHODS ===
     def self.importer_class
+      # fail "importer_class class method is required by #{self.class.name}"
+      CSVImportable::CSVImporter
+    end
+
+    def self.row_importer_class
       fail "importer_class class method is required by #{self.class.name}"
     end
 
@@ -30,10 +35,15 @@ module CSVImportable
     def importable_class
       self.class
     end
+
+    def save_to_db
+      return save if respond_to?(:save)
+      fail "please implement the save_to_db method on #{self.class.name}"
+    end
     # === END INTERFACE METHODS ===
 
     def import!
-      return start_async if big_file?
+      return start_async if should_run_async?
       process_now
     end
 
@@ -59,8 +69,23 @@ module CSVImportable
       importer.big_file?
     end
 
+    def should_run_async?
+      big_file?
+    end
+
+    def not_running_async?
+      !should_run_async?
+    end
+
     def importer
-      @importer ||= self.class.importer_class.new(import_id: self.id, importable_class: importable_class, should_replace: should_replace?)
+      args = { should_replace: should_replace? }
+      if new_record? && not_running_async?
+        args = args.merge(file_string: read_file)
+      else
+        args = args.merge(import_id: id, importable_class: importable_class)
+      end
+
+      @importer ||= self.class.importer_class.new(args)
     end
 
     def underscored_pluralized_name
@@ -88,7 +113,7 @@ module CSVImportable
     end
 
     def display_status
-      case status.try(:to_sym)
+      case status
       when Statuses::SUCCEEDED
         'Import Succeeded'
       when Statuses::FAILED
@@ -96,6 +121,11 @@ module CSVImportable
       else
         'Processing'
       end
+    end
+
+    def number_of_records_imported
+      return 0 unless results && results.is_a?(Hash)
+      results[:results].count
     end
 
     private
