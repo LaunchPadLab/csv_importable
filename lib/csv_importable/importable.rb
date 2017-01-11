@@ -18,12 +18,12 @@ module CSVImportable
 
     # === INTERFACE METHODS ===
     def self.importer_class
-      # fail "importer_class class method is required by #{self.class.name}"
+      # hook for subclasses
       CSVImportable::CSVImporter
     end
 
     def self.row_importer_class
-      fail "importer_class class method is required by #{self.class.name}"
+      fail "row_importer_class class method is required by #{self.class.name}"
     end
 
     def read_file
@@ -78,7 +78,7 @@ module CSVImportable
     end
 
     def importer
-      args = { should_replace: should_replace? }
+      args = { should_replace: should_replace?, row_importer_class: self.class.row_importer_class }
       if new_record? && not_running_async?
         args = args.merge(file_string: read_file)
       else
