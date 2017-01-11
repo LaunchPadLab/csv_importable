@@ -4,7 +4,7 @@ module CSVImportable
   class CSVImporter
     include CSVImportable::CSVCoercion
     attr_reader :file_string, :should_replace, :out, :results,
-                :import_obj_class, :import_obj
+                :importable_class, :import_obj
 
     BIG_FILE_THRESHOLD = 10
 
@@ -16,8 +16,8 @@ module CSVImportable
     def initialize(args = {})
       @file_string = args[:file_string]
       import_id = args[:import_id]
-      @import_obj_class = args[:import_obj_class]
-      @import_obj = import_obj_class.find(import_id) if import_id
+      @importable_class = args[:importable_class]
+      @import_obj = importable_class.find(import_id) if import_id
       # because we can't pass file_string to delayed job
       @file_string = @import_obj.read_file if @import_obj
       @should_replace = args.fetch(:should_replace, false)
