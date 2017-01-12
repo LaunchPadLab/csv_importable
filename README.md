@@ -16,8 +16,8 @@ And then execute:
 
 ## Example App
 
-Code: https://github.com/LaunchPadLab/example_csv_import
-Demo: https://example-csv-import.herokuapp.com/
+- Code: https://github.com/LaunchPadLab/example_csv_import
+- Demo: https://example-csv-import.herokuapp.com/
 
 ## Usage
 
