@@ -404,6 +404,10 @@ Your view may look something like:
 <% end %>
 ```
 
+### Overwriting the `Importer` class
+
+TODO: add explanation about how to do this.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/launchpadlab/csv_importable
