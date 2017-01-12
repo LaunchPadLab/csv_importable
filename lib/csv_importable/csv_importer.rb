@@ -142,11 +142,11 @@ module CSVImportable
       def print_results(results)
         case results[:status]
         when Statuses::SUCCESS
-          print("Imported completed successfully!".green)
+          print("Imported completed successfully!")
         when Statuses::ERROR
-          print("\nImported failed, all changes have been rolled back.\n\n".red)
+          print("\nImported failed, all changes have been rolled back.\n\n")
           if results[Statuses::ERROR]
-            print("  #{results[Statuses::ERROR]}\n\n".red)
+            print("  #{results[Statuses::ERROR]}\n\n")
           else
             results[:results].each { |result| print(" #{result}\n") }
           end

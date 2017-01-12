@@ -115,7 +115,7 @@ Let's say you want to create a UI for your users to upload a CSV of users for yo
 Routes:
 
 ```ruby
-resources :user_imports, only: [:new, :create, :index], controller: :user_imports
+resources :user_imports, only: [:new, :create, :index]
 ```
 
 Controller (app/controllers/user_imports_controller.rb):
@@ -127,7 +127,7 @@ class UserImportsController < ApplicationController
   end
 
   def create
-    @import = UserImport.new(args)
+    @import = UserImport.new(params[:user_import])
 
     if @import.import!
       redirect_to :back, notice: "The file is being imported."
