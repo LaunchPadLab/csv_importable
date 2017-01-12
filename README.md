@@ -38,11 +38,18 @@ Note: if you're not using Paperclip, don't worry about implementing the `file` f
 Change the Import class to look something like below:
 
 ```ruby
-class Import < ActiveRecord::Base
+class Import < ApplicationRecord
   include CSVImportable::Importable
 
   has_attached_file :file
   validates_attachment :file, content_type: { content_type: ['text/csv']}, message: "is not in CSV format"
+
+  ## for background processing
+  ## note - this code is for Delayed Jobs,
+  ## you may need to implement something different
+  ## for a different background job processor
+  # handle_asynchronously :process_in_background
+  
 
   def read_file
     # needs to return StringIO of file
