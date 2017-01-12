@@ -11,9 +11,6 @@ module CSVImportable
 
     included do
       serialize :results, Hash
-
-      has_attached_file :file
-      validates_attachment :file, content_type: { content_type: ['text/csv']} , message: "is not in CSV format"
     end
 
     DEFAULT_BIG_FILE_THRESHOLD = 10
