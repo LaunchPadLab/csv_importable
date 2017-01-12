@@ -318,14 +318,14 @@ For the ambitous out there that are trying to build one common UI for your users
 
 Routes:
 
-```
+```ruby
 resources :user_imports, controller: :imports, type: 'UserImport'
 resources :companies_imports, controller: :imports, type: 'CompanyImport'
 ```
 
 Controller:
 
-```
+```ruby
 class ImportsController < ApplicationController
   def index
     @imports = model.all
@@ -381,7 +381,7 @@ end
 
 app/helpers/imports_helper:
 
-```
+```ruby
 module ImportsHelper
   def url_for_import(import_obj)
     if import_obj.new_record?
@@ -397,7 +397,7 @@ end
 
 Your view may look something like:
 
-```
+```erb
 <%= form_for @import, url: url_for_import(@import), html: { multipart: true } do |f| %>
   <%= f.file_field :file %>
   <%= f.submit %>
