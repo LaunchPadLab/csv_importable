@@ -118,7 +118,7 @@ Routes:
 resources :user_imports, only: [:new, :create, :index], controller: :user_imports
 ```
 
-Controller:
+Controller (app/controllers/user_imports_controller.rb):
 
 ```ruby
 class UserImportsController < ApplicationController
@@ -132,7 +132,7 @@ class UserImportsController < ApplicationController
     if @import.import!
       redirect_to :back, notice: "The file is being imported."
     else
-      redirect_to :back, alert: 'There was a problem with the import. Please contact the administrator if the probelm persists.'
+      render :new
     end
   end
 
@@ -142,7 +142,7 @@ class UserImportsController < ApplicationController
 end
 ```
 
-Your form view may look something like:
+New view (app/views/user_imports/new.html.erb):
 
 ```erb
 <%= form_for @import, html: { multipart: true } do |f| %>
@@ -159,7 +159,7 @@ Your form view may look something like:
 <% end %>
 ```
 
-Your index view may look something like:
+Index view (app/views/user_imports/index.html.erb):
 
 ```erb
 <ul>
