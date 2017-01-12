@@ -76,6 +76,8 @@ end
 
 And then create a subclass that should correspond to the specific importing task you are implementing. For example, if you are trying to import users from a CSV, you might implement a `UserImport` class which inherits from `Import`:
 
+app/models/user_import.rb:
+
 ```ruby
 class UserImport < Import
   def row_importer_class
@@ -104,50 +106,7 @@ class UserRowImporter < CSVImportable::CSVImporter
 end
 ```
 
-See that `pull_string` method? Let's talk about that for a second...
-
-#### Parsers
-
-To assist you in getting data out of your CSV, we've implemented some basic parsers. These parsers will grab the raw data for the particular row/column and attempt to coerce it into the correct type (e.g. take string from CSV and convert to float).
-
-If the parser fails to coerce the data properly, it will add an error message to the array of errors that your user receives after the import runs. These errors help the user fix the import file in order to try again.
-
-- pull_string
-- pull_boolean
-- pull_date
-- pull_float
-- pull_integer
-- pull_select (e.g. `pull_select('my_boolean_column', options: ['Yes', 'No'])`)
-
-Basic syntax: `pull_string(column_key, args)` where `column_key` is the CSV header string for the column and `args` is a hash with the following defaults: `{ required: false }`
-
-
-#### Custom Parsers
-
-You can build a custom parser by creating a class that inherits from `CSVImportable::TypeParser`. This class needs to implement at least two methods:
-
-- `parse_val`
-- `error_message`
-
-For example:
-
-```ruby
-class TypeParser::CustomDateTypeParser < CSVImportable::TypeParser
-  def parse_val
-    Date.strptime(value, '%m-%d-%Y')
-  end
-
-  def error_message
-    "Invalid date for column: #{key}"
-  end
-end
-```
-
-Now, in your `RowImporter` class you can call: `TypeParser::CustomDateTypeParser.new('my_date_field')` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
-
-#### Ignoring Parsers
-
-Inside a `RowImporter` class, you have access to `row` and `headers` methods. For example, you can call `row.field('field_name')` to pull data directly from the CSV. 
+See that `pull_string` method? See the Parsers section below for more information on how to take advantage of them.
 
 ### Creating an Import UI for your users
 
@@ -220,6 +179,51 @@ Your index view may look something like:
   <% end %>
 </ul>
 ```
+
+## Advanced Usage
+
+### Parsers
+
+To assist you in getting data out of your CSV, we've implemented some basic parsers. These parsers will grab the raw data for the particular row/column and attempt to coerce it into the correct type (e.g. take string from CSV and convert to float).
+
+If the parser fails to coerce the data properly, it will add an error message to the array of errors that your user receives after the import runs. These errors help the user fix the import file in order to try again.
+
+- pull_string
+- pull_boolean
+- pull_date
+- pull_float
+- pull_integer
+- pull_select (e.g. `pull_select('my_boolean_column', options: ['Yes', 'No'])`)
+
+Basic syntax: `pull_string(column_key, args)` where `column_key` is the CSV header string for the column and `args` is a hash with the following defaults: `{ required: false }`
+
+
+#### Custom Parsers
+
+You can build a custom parser by creating a class that inherits from `CSVImportable::TypeParser`. This class needs to implement at least two methods:
+
+- `parse_val`
+- `error_message`
+
+For example:
+
+```ruby
+class TypeParser::CustomDateTypeParser < CSVImportable::TypeParser
+  def parse_val
+    Date.strptime(value, '%m-%d-%Y')
+  end
+
+  def error_message
+    "Invalid date for column: #{key}"
+  end
+end
+```
+
+Now, in your `RowImporter` class you can call: `TypeParser::CustomDateTypeParser.new('my_date_field')` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
+
+#### Ignoring Parsers
+
+Inside a `RowImporter` class, you have access to `row` and `headers` methods. For example, you can call `row.field('field_name')` to pull data directly from the CSV. 
 
 ### ActiveAdmin
 
