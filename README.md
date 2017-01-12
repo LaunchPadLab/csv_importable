@@ -86,12 +86,13 @@ The `RowImporter` class handles the logic surrounding how one row in the CSV sho
 ```ruby
 class UserRowImporter < CSVImportable::CSVImporter
   def import_row
-    user = User.new
-    user.email = pull_string('email', required: true)
-    user.first_name = pull_string('first_name', required: true)
-    user.last_name = pull_string('last_name', required: true)
-    user.birthdate = pull_date('birthdate') # format: YYYYMMDD    
-    user.salary = pull_float('salary')
+    user = User.create(
+      email: pull_string('email', required: true),
+      first_name: pull_string('first_name', required: true),
+      last_name: pull_string('last_name', required: true),
+      birthdate: pull_date('birthdate'), # format: YYYYMMDD
+      salary: pull_float('salary')
+    )
   end
 end
 ```
@@ -139,7 +140,7 @@ Now, in your `RowImporter` class you can call: `TypeParser::CustomDateTypeParser
 
 #### Ignoring Parsers
 
-Inside a RowImporter class, you have access to `row` and `headers` methods. You can call `row.field('field_name')` to pull data directly from the CSV. 
+Inside a `RowImporter` class, you have access to `row` and `headers` methods. For example, you can call `row.field('field_name')` to pull data directly from the CSV. 
 
 ### Creating an Import UI for your users
 
@@ -147,13 +148,13 @@ Let's say you want to create a UI for your users to upload a CSV of users for yo
 
 Routes:
 
-```
+```ruby
 resources :user_imports, only: [:new, :create, :index], controller: :user_imports
 ```
 
 Controller:
 
-```
+```ruby
 class UserImportsController < ApplicationController
   def new
     @import = UserImport.new
@@ -313,10 +314,13 @@ end
 
 #### One UI to rule them all
 
+For the ambitous out there that are trying to build one common UI for your users to implement many different imports, see here.
+
 Routes:
 
 ```
 resources :user_imports, controller: :imports, type: 'UserImport'
+resources :companies_imports, controller: :imports, type: 'CompanyImport'
 ```
 
 Controller:
