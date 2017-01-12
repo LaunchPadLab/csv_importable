@@ -38,7 +38,7 @@ module CSVImportable
         @results = parse_csv_string(file_string) do |row, headers|
           process_row(row, headers)
         end
-        after_rows(@results.map(&:value))
+        after_rows(@results.map { |result| result[:value] })
         print(finished_message)
         @results
       end

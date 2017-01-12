@@ -17,12 +17,12 @@ module CSVImportable
     end
 
     # === INTERFACE METHODS ===
-    def self.importer_class
+    def importer_class
       # hook for subclasses
       CSVImportable::CSVImporter
     end
 
-    def self.row_importer_class
+    def row_importer_class
       fail "row_importer_class class method is required by #{self.class.name}"
     end
 
@@ -78,14 +78,14 @@ module CSVImportable
     end
 
     def importer
-      args = { should_replace: should_replace?, row_importer_class: self.class.row_importer_class }
+      args = { should_replace: should_replace?, row_importer_class: row_importer_class }
       if new_record? && not_running_async?
         args = args.merge(file_string: read_file)
       else
         args = args.merge(import_id: id, importable_class: importable_class)
       end
 
-      @importer ||= self.class.importer_class.new(args)
+      @importer ||= importer_class.new(args)
     end
 
     def underscored_pluralized_name
@@ -125,7 +125,7 @@ module CSVImportable
 
     def number_of_records_imported
       return 0 unless results && results.is_a?(Hash)
-      results[:results].count
+      results[:results].try(:count) || 0
     end
 
     private
