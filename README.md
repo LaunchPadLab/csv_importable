@@ -14,6 +14,11 @@ And then execute:
 
     $ bundle
 
+## Example App
+
+Code: https://github.com/LaunchPadLab/example_csv_import
+Demo: https://example-csv-import.herokuapp.com/
+
 ## Usage
 
 High level steps:
@@ -93,7 +98,7 @@ The only method that you need to define here is the `row_importer_class`, which 
 The `RowImporter` class handles the logic surrounding how one row in the CSV should be imported and added to the database. You need only (1) inherit from `CSVImportable::CSVImporter` and (2) implement the `import_row` method.
 
 ```ruby
-class UserRowImporter < CSVImportable::CSVImporter
+class UserRowImporter < CSVImportable::RowImporter
   def import_row
     user = User.create(
       email: pull_string('email', required: true),
@@ -115,7 +120,7 @@ Let's say you want to create a UI for your users to upload a CSV of users for yo
 Routes:
 
 ```ruby
-resources :user_imports, only: [:new, :create, :index]
+resources :user_imports
 ```
 
 Controller (app/controllers/user_imports_controller.rb):
@@ -127,22 +132,53 @@ class UserImportsController < ApplicationController
   end
 
   def create
-    @import = UserImport.new(params[:user_import])
+    @import = UserImport.new(user_import_params)
+    process_import
+  end
 
-    if @import.import!
-      redirect_to :back, notice: "The file is being imported."
-    else
-      render :new
-    end
+  def edit
+    @import = UserImport.find(params[:id])
+  end
+
+  def update
+    @import = UserImport.find(params[:id])
+    @import.attributes = user_import_params
+    process_import
   end
 
   def index
     @imports = UserImport.all
   end
+
+  private
+
+    def process_import
+      if @import.import!
+        return redirect_to user_imports_path, notice: "The file is being imported."
+      else
+        return redirect_to edit_user_import_path(@import)
+      end
+    end
+
+    def user_import_params
+      params.require(:user_import).permit(:file)
+    end
 end
 ```
 
 New view (app/views/user_imports/new.html.erb):
+
+```erb
+<%= render 'form' %>
+```
+
+Edit view (app/views/user_imports/edit.html.erb):
+
+```erb
+<%= render 'form' %>
+```
+
+Form partial (app/views/user_imports/_form.html.erb):
 
 ```erb
 <%= form_for @import, html: { multipart: true } do |f| %>
