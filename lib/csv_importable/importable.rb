@@ -16,25 +16,15 @@ module CSVImportable
       validates_attachment :file, content_type: { content_type: ['text/csv']} , message: "is not in CSV format"
     end
 
-    # === INTERFACE METHODS ===
-    def importer_class
-      # hook for subclasses
-      CSVImportable::CSVImporter
-    end
+    DEFAULT_BIG_FILE_THRESHOLD = 10
 
-    def row_importer_class
-      fail "row_importer_class class method is required by #{self.class.name}"
-    end
-
+    # === PUBLIC INTERFACE METHODS ===
     def read_file
       # returns CSV StringIO data
       # e.g. Paperclip.io_adapters.for(file).read
       fail "read_file method is required by #{self.class.name}"
     end
 
-    def importable_class
-      self.class
-    end
 
     def save_to_db
       return save if respond_to?(:save)
@@ -43,62 +33,17 @@ module CSVImportable
     # === END INTERFACE METHODS ===
 
     def import!
-      return start_async if should_run_async?
+      # start_async provided by Asyncable module
+      return start_async if run_async?
       process_now
     end
 
-    def async_operation
-      run_importer
-    end
-
-    def process_now
-      run_importer
-      complete!
-    end
-
-    def async_complete!
-      complete!
-    end
-
-    def complete!
-      return success! if importer.succeeded?
-      failed!(results[:error])
-    end
-
-    def big_file?
-      importer.big_file?
-    end
-
-    def should_run_async?
+    def run_async?
       big_file?
     end
 
-    def not_running_async?
-      !should_run_async?
-    end
-
-    def importer
-      args = { should_replace: should_replace?, row_importer_class: row_importer_class }
-      if new_record? && not_running_async?
-        args = args.merge(file_string: read_file)
-      else
-        args = args.merge(import_id: id, importable_class: importable_class)
-      end
-
-      @importer ||= importer_class.new(args)
-    end
-
-    def underscored_pluralized_name
-      underscored_name.pluralize
-    end
-
-    def underscored_name
-      self.class.name.underscore
-    end
-
-    def error_hash
-      return {} if did_not_fail?
-      { underscored_name => formatted_errors }.with_indifferent_access
+    def not_async?
+      !run_async?
     end
 
     def formatted_errors
@@ -129,6 +74,71 @@ module CSVImportable
     end
 
     private
+
+      # === PRIVATE INTERFACE METHODS ===
+      def importer_class
+        # hook for subclasses
+        CSVImportable::CSVImporter
+      end
+
+      def row_importer_class
+        fail "row_importer_class class method is required by #{self.class.name}"
+      end
+
+      def importable_class
+        self.class
+      end
+
+      def importer_options
+        # hook for additional options
+        {}
+      end
+      # === END INTERFACE METHODS ===
+
+      def async_operation
+        run_importer
+      end
+
+      def process_now
+        run_importer
+        complete!
+      end
+
+      def async_complete!
+        # async_complete! is a hook from Asyncable module
+        complete!
+      end
+
+      def complete!
+        return success! if importer.succeeded?
+        failed!(results[:error])
+      end
+
+      def big_file?
+        importer.big_file?
+      end
+
+      def big_file_threshold
+        DEFAULT_BIG_FILE_THRESHOLD
+      end
+
+      def importer
+        return @importer if @importer
+
+        args = {
+          should_replace: should_replace?,
+          row_importer_class: row_importer_class,
+          big_file_threshold: big_file_threshold
+        }.merge(importer_options)
+
+        if new_record? && !processing? # e.g. new record that's not async
+          args = args.merge(file_string: read_file)
+        else
+          args = args.merge(import_id: id, importable_class: importable_class)
+        end
+
+        @importer ||= importer_class.new(args)
+      end
 
       def run_importer
         importer.import

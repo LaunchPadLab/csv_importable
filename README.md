@@ -28,6 +28,8 @@ Please note, it is also possible to implement an `Importer` class, which handles
 
 This model handles and stores the file, status, and results of the import for the user to see. By storing the file and results, we can process the import in the background when the file is too large to process real-time, and then email the user when the import is finished.
 
+Note: if you're not using Paperclip, you can modify `file` to be a string or some other data type that helps you find the file for the `read_file` method, which is really the only required field as it relates to the uploaded file.
+
     $ rails g model Import status:string results:text type:string file:attachment should_replace:boolean
     $ bundle exec rake db:migrate
 
@@ -37,8 +39,8 @@ Change the Import class to look something like below:
 class Import < ActiveRecord::Base
   include CSVImportable::Importable
 
-  def self.row_importer_class
-    # e.g. UserRowImporter
+  def row_importer_class
+    # e.g. UserRowImporter (see next section)
   end
 
   def read_file
@@ -54,6 +56,12 @@ class Import < ActiveRecord::Base
 
   def save_to_db
     save
+  end
+
+  def big_file_threshold
+    # max number of rows before processing with a background job
+    # super returns the default of 10
+    super
   end
 end
 ```

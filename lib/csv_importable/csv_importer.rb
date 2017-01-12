@@ -4,9 +4,8 @@ module CSVImportable
   class CSVImporter
     include CSVImportable::CSVCoercion
     attr_reader :file_string, :should_replace, :out, :results,
-                :importable_class, :import_obj, :row_importer_class
-
-    BIG_FILE_THRESHOLD = 10
+                :importable_class, :import_obj, :row_importer_class,
+                :big_file_threshold
 
     module Statuses
       SUCCESS = :success
@@ -17,6 +16,7 @@ module CSVImportable
       @file_string = args[:file_string]
       import_id = args[:import_id]
       @importable_class = args[:importable_class]
+      @big_file_threshold = args[:big_file_threshold]
       @import_obj = importable_class.find(import_id) if import_id
       # because we can't pass file_string to delayed job
       @file_string = @import_obj.read_file if @import_obj
@@ -46,7 +46,7 @@ module CSVImportable
     end
 
     def big_file?
-      parse_csv_string(file_string).count > BIG_FILE_THRESHOLD
+      parse_csv_string(file_string).count > big_file_threshold
     end
 
     def succeeded?
