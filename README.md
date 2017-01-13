@@ -110,7 +110,7 @@ The only method that you need to define here is the `row_importer_class`, which 
 
 ### Create RowImporter Class
 
-The `RowImporter` class handles the logic surrounding how one row in the CSV should be imported and added to the database. You need only (1) inherit from `CSVImportable::CSVImporter` and (2) implement the `import_row` method.
+The `RowImporter` class handles the logic surrounding how one row in the CSV should be imported and added to the database. You need only (1) inherit from `CSVImportable::RowImporter` and (2) implement the `import_row` method.
 
 ```ruby
 class UserRowImporter < CSVImportable::RowImporter
