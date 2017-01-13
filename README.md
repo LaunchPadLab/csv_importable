@@ -132,13 +132,13 @@ See that `pull_string` method? Check out the Parsers section below for more info
 
 Let's say you want to create a UI for your users to upload a CSV for your new `UserImport`.
 
-Routes:
+**Routes:**
 
 ```ruby
 resources :user_imports
 ```
 
-Controller (app/controllers/user_imports_controller.rb):
+**Controller (app/controllers/user_imports_controller.rb):**
 
 ```ruby
 class UserImportsController < ApplicationController
@@ -181,19 +181,19 @@ class UserImportsController < ApplicationController
 end
 ```
 
-New view (app/views/user_imports/new.html.erb):
+**New view (app/views/user_imports/new.html.erb):**
 
 ```erb
 <%= render 'form' %>
 ```
 
-Edit view (app/views/user_imports/edit.html.erb):
+**Edit view (app/views/user_imports/edit.html.erb):**
 
 ```erb
 <%= render 'form' %>
 ```
 
-Form partial (app/views/user_imports/_form.html.erb):
+**Form partial (app/views/user_imports/_form.html.erb):**
 
 ```erb
 <%= form_for @import, html: { multipart: true } do |f| %>
@@ -210,7 +210,7 @@ Form partial (app/views/user_imports/_form.html.erb):
 <% end %>
 ```
 
-Index view (app/views/user_imports/index.html.erb):
+**Index view (app/views/user_imports/index.html.erb):**
 
 ```erb
 <ul>
