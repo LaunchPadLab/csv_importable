@@ -1,6 +1,21 @@
 # CSV Importable
 
-Intelligently parse CSVs and display errors to your users.
+While it may seem simple on the surface, allowing a user to upload a CSV for inserting or updating multiple records at a time can actually be quite difficult. Here are a few of the tasks involved:
+
+- For big files, put the import on a background job
+    - send email when complete
+- If the import fails, compile a list of errors to show the user
+- For each row in the CSV, do the following:
+  - Parse the data (for example, extracting a date field)
+  - Find or create objects and their relationships
+  - Record any validation errors that occur to show the user
+
+The goal of this gem is to allow you to focus on what is unique about your import process: how the data from the CSV should impact your database.
+
+## Example Rails App**
+
+- Code: https://github.com/LaunchPadLab/example_csv_import
+- Demo: https://example-csv-import.herokuapp.com/
 
 ## Installation
 
@@ -13,11 +28,6 @@ gem 'csv_importable'
 And then execute:
 
     $ bundle
-
-## Example App
-
-- Code: https://github.com/LaunchPadLab/example_csv_import
-- Demo: https://example-csv-import.herokuapp.com/
 
 ## Usage
 
