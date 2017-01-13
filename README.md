@@ -126,7 +126,7 @@ class UserRowImporter < CSVImportable::RowImporter
 end
 ```
 
-See that `pull_string` method? See the Parsers section below for more information on how to take advantage of them.
+See that `pull_string` method? Check out the Parsers section below for more information on how to take advantage of default and custom parsers.
 
 ### Creating an Import UI for your users
 
