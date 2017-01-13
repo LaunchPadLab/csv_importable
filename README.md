@@ -246,7 +246,7 @@ If the parser fails to coerce the data properly, it will add an error message to
 - pull_integer
 - pull_select (e.g. `pull_select('color', options: ['Red', 'Green', 'Blue'])`)
 
-Basic syntax: `pull_string(column_key, args)` where `column_key` is the CSV header string for the column and `args` is a hash with the following defaults: `{ required: false }`
+Basic syntax: `pull_string(column_key, args)` where `column_key` is the CSV header string for the column and `args` is a hash with the following defaults: `{ required: false, row: row }`
 
 
 #### Custom Parsers
