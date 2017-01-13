@@ -259,7 +259,7 @@ You can build a custom parser by creating a class that inherits from `CSVImporta
 For example:
 
 ```ruby
-class TypeParser::CustomDateTypeParser < CSVImportable::TypeParser
+class CustomDateTypeParser < CSVImportable::TypeParser
   def parse_val
     Date.strptime(value, '%m-%d-%Y')
   end
@@ -270,7 +270,7 @@ class TypeParser::CustomDateTypeParser < CSVImportable::TypeParser
 end
 ```
 
-Now, in your `RowImporter` class you can call: `TypeParser::CustomDateTypeParser.new('my_date_field')` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
+Now, in your `RowImporter` class you can call: `CustomDateTypeParser.new('my_date_field')` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
 
 #### Ignoring Parsers
 
