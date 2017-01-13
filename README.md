@@ -3,14 +3,19 @@
 While it may seem simple on the surface, allowing a user to upload a CSV for inserting or updating multiple records at a time can actually be quite difficult. Here are a few of the tasks involved:
 
 - For big files, put the import on a background job
+    - store CSV for background processing
     - send email when complete
-- If the import fails, compile a list of errors to show the user
+    - store status to keep the user informed on progress
+    - store errors to show the user what went wrong if the import fails
 - For each row in the CSV, do the following:
   - Parse the data (for example, extracting a date field)
   - Find or create objects and their relationships
-  - Record any validation errors that occur to show the user
+  - Record any errors that occur to show the user
+- If any errors occur during the process, rollback all transactions, show the user the errors, and allow the user to try again
 
-The goal of this gem is to allow you to focus on what is unique about your import process: how the data from the CSV should impact your database.
+While this process is certainly complicated, it is consistent enough to justify the existence of a gem.
+
+The goal of the CSV Importable gem is to allow you to focus on what is unique about your import process: how the data from the CSV should impact your database.
 
 ## Example Rails App
 
