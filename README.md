@@ -12,7 +12,7 @@ While it may seem simple on the surface, allowing a user to upload a CSV for ins
 
 The goal of this gem is to allow you to focus on what is unique about your import process: how the data from the CSV should impact your database.
 
-## Example Rails App**
+## Example Rails App
 
 - Code: https://github.com/LaunchPadLab/example_csv_import
 - Demo: https://example-csv-import.herokuapp.com/
