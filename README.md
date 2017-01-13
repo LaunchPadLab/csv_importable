@@ -130,7 +130,7 @@ See that `pull_string` method? Check out the Parsers section below for more info
 
 ### Creating an Import UI for your users
 
-Let's say you want to create a UI for your users to upload a CSV of users for your new `UserImport`.
+Let's say you want to create a UI for your users to upload a CSV for your new `UserImport`.
 
 Routes:
 
