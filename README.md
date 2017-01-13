@@ -270,7 +270,7 @@ class CustomDateTypeParser < CSVImportable::TypeParser
 end
 ```
 
-Now, in your `RowImporter` class you can call: `CustomDateTypeParser.new('my_date_field')` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
+Now, in your `RowImporter` class you can call: `CustomDateTypeParser.new('my_date_field', row: row)` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
 
 #### Ignoring Parsers
 
