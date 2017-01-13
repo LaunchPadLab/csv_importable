@@ -74,7 +74,7 @@ class Import < ApplicationRecord
   def read_file
     # needs to return StringIO of file
     # for paperclip, use:
-    # Paperclip.io_adapters.for(file).read
+    Paperclip.io_adapters.for(file).read
   end
 
   def after_async_complete
