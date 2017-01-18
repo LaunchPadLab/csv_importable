@@ -104,6 +104,7 @@ module CSVImportable
       def async_complete!
         # async_complete! is a hook from Asyncable module
         complete!
+        after_async_complete
       end
 
       def complete!
