@@ -64,6 +64,8 @@ class Import < ApplicationRecord
   has_attached_file :file
   validates_attachment :file, content_type: { content_type: ['text/csv']}, message: "is not in CSV format"
 
+  validates :file, presence: true
+
   ## for background processing
   ## note - this code is for Delayed Jobs,
   ## you may need to implement something different
@@ -231,6 +233,42 @@ end
 </ul>
 ```
 
+## Send an email once background job finishes
+
+If the user uploads a large file that exceeds your `big_file_threshold`, you can send an email to the user when it is complete.
+
+**app/models/import.rb**
+
+```ruby
+def async_complete
+  SiteMailer.import_complete(self).deliver_later
+end
+```
+
+**app/mailers/site_mailer.rb**
+
+```ruby
+def import_complete(import)
+  @import = import
+  email = 'ryan@example.com' # this could be import.user.email for example
+  mail(to: email, subject: 'Your Import is Complete')
+end
+```
+
+**app/views/site_mailer/import_complete.html.erb**
+
+```erb
+<div>
+  <p>Your import finished processing.</p>
+  <p>Status: <span class="<%= @import.status %>"><%= @import.display_status %><span></p>
+  <% if @import.failed? %>
+    <p>Please review your errors here: <%= link_to 'See Errors', import_url(@import.id) %></p>
+  <% else %>
+    <p>You can review your import here: <%= link_to 'Review Import', import_url(@import.id) %></p>
+  <% end %>
+</div>
+```
+
 ## Advanced Usage
 
 ### Parsers
@@ -337,7 +375,12 @@ ActiveAdmin.register Import do
       end
     end
 
-    f.inputs "Details" do
+    panel "1. Download Template CSV" do
+      # link to template file that should be in public/
+      link_to 'Download Template CSV', '/example.csv'
+    end
+
+    f.inputs "2. Import CSV" do
       f.input :file, :as => :file, :hint => f.object.file_file_name
     end
     f.actions
@@ -351,17 +394,19 @@ ActiveAdmin.register Import do
 
     def create
       @import = Import.new(params[:import])
+      return render :new unless @import.save
 
       if @import.import!
         process_success
       else
-        return render :new
+        return redirect_to edit_admin_import_path(@import)
       end
     end
 
     def update
       @import = Import.find(params[:id])
       @import.attributes = params[:import] || {}
+      return render :edit unless @import.save
 
       if @import.import!
         process_success

@@ -8,7 +8,10 @@ module CSVImportable
 
     def parse_val
       val = value.downcase
-      raise unless options.include?(val)
+      opts = options.map do |option|
+        option.downcase if option.respond_to?(:downcase)
+      end
+      raise unless opts.include?(val)
       val
     end
 
