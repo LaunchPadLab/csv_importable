@@ -62,7 +62,16 @@ class Import < ApplicationRecord
   include CSVImportable::Importable
 
   has_attached_file :file
-  validates_attachment :file, content_type: { content_type: ['text/csv']}, message: "is not in CSV format"
+  validates_attachment :file,
+    content_type: {
+      content_type: [
+        'text/plain',
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/octet-stream'
+      ]
+    },
+    message: "is not in CSV format"
 
   validates :file, presence: true
 
@@ -94,6 +103,14 @@ class Import < ApplicationRecord
     super
   end
 end
+```
+
+And create a new file at config/initializers/paperclip.rb:
+
+```
+Paperclip.options[:content_type_mappings] = {
+  csv: ['application/vnd.ms-excel', 'application/octet-stream', 'text/csv', 'text/plain', 'text/comma-separated-values']
+}
 ```
 
 And then create a subclass that should correspond to the specific importing task you are implementing. For example, if you are trying to import users from a CSV, you might implement a `UserImport` class which inherits from `Import`:
