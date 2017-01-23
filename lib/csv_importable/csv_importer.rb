@@ -166,6 +166,8 @@ module CSVImportable
 
         idx = 1
         csv.each.map do |row|
+          next if row.to_hash.values.all?(&:nil?) # ignore blank rows
+
           errors = []
           return_value = nil
           begin
@@ -182,7 +184,7 @@ module CSVImportable
             errors: result.fetch(:errors, []) + errors,
             value: return_value
           }
-        end
+        end.compact
       end
 
       def has_errors?
