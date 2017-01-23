@@ -12,7 +12,7 @@ module CSVImportable
         option.downcase if option.respond_to?(:downcase)
       end
       raise unless opts.include?(val)
-      val
+      value
     end
 
     def error_message
