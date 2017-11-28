@@ -18,6 +18,7 @@ module CSVImportable
       @importable_class = args[:importable_class]
       @big_file_threshold = args[:big_file_threshold]
       @import_obj = importable_class.find(import_id) if import_id
+      @import_obj = args[:import_obj] if args[:import_obj]
       # because we can't pass file_string to delayed job
       @file_string = @import_obj.read_file if @import_obj
       @should_replace = args.fetch(:should_replace, false)

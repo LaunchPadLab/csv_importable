@@ -130,7 +130,7 @@ module CSVImportable
         }.merge(importer_options)
 
         if new_record? && !processing? # e.g. new record that's not async
-          args = args.merge(file_string: read_file)
+          args = args.merge(file_string: read_file, import_obj: self)
         else
           args = args.merge(import_id: id, importable_class: importable_class)
         end

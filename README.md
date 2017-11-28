@@ -80,7 +80,7 @@ class Import < ApplicationRecord
   ## you may need to implement something different
   ## for a different background job processor
   # handle_asynchronously :process_in_background
-  
+
 
   def read_file
     # needs to return StringIO of file
@@ -134,7 +134,7 @@ The `RowImporter` class handles the logic surrounding how one row in the CSV sho
 ```ruby
 class UserRowImporter < CSVImportable::RowImporter
   def import_row
-    user = User.create(
+    User.create(
       email: pull_string('email', required: true),
       first_name: pull_string('first_name', required: true),
       last_name: pull_string('last_name', required: true),
@@ -325,11 +325,11 @@ class CustomDateTypeParser < CSVImportable::TypeParser
 end
 ```
 
-Now, in your `RowImporter` class you can call: `CustomDateTypeParser.new('my_date_field', row: row)` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
+Now, in your `RowImporter` class you can call: `CustomDateTypeParser.new('my_date_field', row: row).parse_val` to return a date object when the data is in the right format. If the parser fails to parse the field, it will add the correct error message for your user to review and resolve.
 
 #### Ignoring Parsers
 
-Inside a `RowImporter` class, you have access to `row` and `headers` methods. For example, you can call `row.field('field_name')` to pull data directly from the CSV. 
+Inside a `RowImporter` class, you have access to `row` and `headers` methods. For example, you can call `row.field('field_name')` to pull data directly from the CSV.
 
 ### ActiveAdmin
 
@@ -495,7 +495,7 @@ class ImportsController < ApplicationController
     # def valid_type?
     #   Import::Types::ALL.include?(type)
     # end
-    
+
     # def redirect_invalid_type
     #   flash.now[:alert] = 'Not a valid import type'
     #   return redirect_to :back
