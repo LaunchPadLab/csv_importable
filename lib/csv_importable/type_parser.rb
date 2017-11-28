@@ -34,7 +34,7 @@ module CSVImportable
       def pull_value_from_row
         return nil unless row
         # handle both caps and lowercase
-        row.field(key.upcase) || row.field(key.downcase)
+        row.field(key) || row.field(key.upcase) || row.field(key.downcase)
       end
 
       def parse_val
