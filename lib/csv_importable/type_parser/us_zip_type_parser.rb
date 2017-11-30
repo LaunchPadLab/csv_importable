@@ -4,8 +4,7 @@ module CSVImportable
       val = value.delete('-')
       not_digits unless val.count('0-9') == val.length
       return value if val.length == 9
-      val = '0' + val until val.length >= 5
-      val
+      val.rjust(5, '0')
     end
 
     def not_digits
