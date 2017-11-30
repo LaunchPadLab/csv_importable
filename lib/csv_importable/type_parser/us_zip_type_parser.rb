@@ -1,5 +1,5 @@
 module CSVImportable
-  class TypeParser::ZipTypeParser < TypeParser
+  class TypeParser::USZipTypeParser < TypeParser
     def parse_val
       val = value.delete('-')
       not_digits unless val.count('0-9') == val.length
