@@ -28,7 +28,11 @@ module CSVImportable
       CSVImportable::TypeParser::SelectTypeParser
     end
 
-    [:string, :date, :boolean, :integer, :float, :percent, :select].each do |parser_type|
+    def us_zip_type_class
+      CSVImportable::TypeParser::USZipTypeParser
+    end
+
+    [:string, :date, :boolean, :integer, :float, :percent, :select, :us_zip].each do |parser_type|
       define_method("pull_#{parser_type}") do |key, options={}|
         csv_row = options.fetch(:row, @row)
         options = options.merge(row: csv_row)
